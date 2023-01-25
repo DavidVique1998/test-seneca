@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
 //Route service provider
 use App\Providers\RouteServiceProvider;
+// use complte register request
+use App\Http\Requests\CompleteRegisterRequest;
+
+use Illuminate\Support\Facades\Auth;
 
 class CompleteRegisterController extends Controller
 {
@@ -38,22 +42,8 @@ class CompleteRegisterController extends Controller
         $this->middleware('auth');
         $this->middleware('verified');
     }
+    
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'surnames' => ['required', 'string', 'max:255'],
-            'address' => ['required', 'string', 'max:255'],
-            'date_of_birth' => ['required', 'date', 'after:1900-01-01', 'before:today'],
-        ]);
-    }
 
     public function index()
     {
@@ -66,13 +56,9 @@ class CompleteRegisterController extends Controller
      * @param  array  $data
      * @return \App\Models\User
      */
-    protected function update(array $data)
+    protected function update(CompleteRegisterRequest $request)
     {
-        return Auth::user()->update([
-            'name' => $data['name'],
-            'surnames' => $data['surnames'],
-            'address' => $data['address'],
-            'date_of_birth' => $data['date_of_birth'],
-        ]);
+        Auth::user()->update($request->validated());
+        return redirect()->route('home');
     }
 }
